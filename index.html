@@ -778,7 +778,7 @@ function renderTable(){
     var bw = Math.max(2, Math.round(d.s/maxS*72));
     var rc = rClass(d.roas);
     var stc = sc[d.status]||'#7a84a0';
-    var wocCls = d.woc >= 12 ? 'woc-hi' : d.woc >= 4 ? 'woc-md' : 'woc-lo';
+    var wocCls = d.woc > 44 ? 'woc-lo' : d.woc >= 32 ? 'woc-hi' : 'woc-md';
     var wocTxt = d.woc >= 99 ? '99+' : d.woc.toFixed(1);
     var stockTxt = d.stock > 0 ? fN(d.stock) : '0';
     return '<tr>' +
