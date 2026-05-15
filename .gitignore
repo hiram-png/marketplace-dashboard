@@ -1,0 +1,9 @@
+# Ignore everything
+*
+
+# Except the dashboard
+!index.html
+!dashboard.html
+!.gitignore
+
+# Don't track data files, Excel files, node modules, etc.
