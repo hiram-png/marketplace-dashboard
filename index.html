@@ -312,6 +312,8 @@ tfoot td:first-child{text-align:left}
           <tr>
             <th data-sort="sku">SKU</th>
             <th data-sort="status">Status</th>
+            <th data-sort="stock">TS Stock</th>
+            <th data-sort="woc">WOC</th>
             <th data-sort="u">Units</th>
             <th data-sort="s">Total Sales</th>
             <th data-sort="ps">PPC Sales</th>
@@ -321,8 +323,6 @@ tfoot td:first-child{text-align:left}
             <th data-sort="os">Org Sales</th>
             <th data-sort="orgPct">Org %</th>
             <th data-sort="tacos">TACOS</th>
-            <th data-sort="stock">TS Stock</th>
-            <th data-sort="woc">WOC</th>
             <th data-sort="mpS_Wayfair">Wayfair</th>
             <th data-sort="mpS_Walmart">Walmart</th>
             <th data-sort="mpS_Target">Target</th>
@@ -784,6 +784,8 @@ function renderTable(){
     return '<tr>' +
       '<td>' + d.sku + '</td>' +
       '<td><span style="color:' + stc + ';font-size:9px;font-weight:600;padding:2px 6px;border:1px solid ' + stc + '40;border-radius:4px">' + d.status + '</span></td>' +
+      '<td>' + stockTxt + '</td>' +
+      '<td><span class="woc-badge ' + wocCls + '">' + wocTxt + 'w</span></td>' +
       '<td>' + fN(d.u) + '</td>' +
       '<td><div class="bar-wrap"><div class="bar-mini" style="width:' + bw + 'px;background:#10b981"></div>' + f$(d.s) + '</div></td>' +
       '<td>' + f$(d.ps) + '</td>' +
@@ -793,8 +795,6 @@ function renderTable(){
       '<td>' + f$(d.os) + '</td>' +
       '<td>' + fPct(d.orgPct) + '</td>' +
       '<td>' + d.tacos.toFixed(2) + '%</td>' +
-      '<td>' + stockTxt + '</td>' +
-      '<td><span class="woc-badge ' + wocCls + '">' + wocTxt + 'w</span></td>' +
       '<td>' + (d.mpS_Wayfair>0?f$(d.mpS_Wayfair):'—') + '</td>' +
       '<td>' + (d.mpS_Walmart>0?f$(d.mpS_Walmart):'—') + '</td>' +
       '<td>' + (d.mpS_Target>0?f$(d.mpS_Target):'—') + '</td>' +
@@ -807,10 +807,10 @@ function renderTable(){
   var tr2 = t.sp>0?t.ps/t.sp:0;
   document.getElementById('tblFoot').innerHTML = '<tr>' +
     '<td>Subtotal (' + rows.length + ' SKUs)</td><td></td>' +
+    '<td>' + fN(t.stk) + '</td><td></td>' +
     '<td>' + fN(t.u) + '</td><td>' + f$(t.s) + '</td><td>' + f$(t.ps) + '</td><td>' + f$(t.sp) + '</td>' +
     '<td>' + tr2.toFixed(2) + 'x</td><td>' + fN(t.ou) + '</td><td>' + f$(t.os) + '</td>' +
     '<td>' + fPct(t.s>0?t.os/t.s:0) + '</td><td>' + (t.s>0?(t.sp/t.s*100).toFixed(2)+'%':'—') + '</td>' +
-    '<td>' + fN(t.stk) + '</td><td></td>' +
     '<td>' + (t.wf>0?f$(t.wf):'—') + '</td><td>' + (t.wm>0?f$(t.wm):'—') + '</td><td>' + (t.tg>0?f$(t.tg):'—') + '</td><td>' + (t.mc>0?f$(t.mc):'—') + '</td><td>' + (t.mi>0?f$(t.mi):'—') + '</td>' +
     '</tr>';
 
