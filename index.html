@@ -1,37 +1,44 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="light">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
 <title>Marketplace Analytics Dashboard</title>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.cdnfonts.com/css/glacial-indifference-2" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;700&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 :root{
-  --bg:#0b0d17;--card:#13162a;--card2:#1c2038;--border:#242842;
-  --text:#e2e8f0;--muted:#7a84a0;--subtle:#3d4460;
-  --indigo:#6366f1;--indigo2:#818cf8;
-  --green:#10b981;--amber:#f59e0b;--red:#ef4444;--purple:#8b5cf6;--cyan:#06b6d4;
+  /* AF dark theme — surfaces built on #0F0F0F (brand "black"), not true black */
+  --bg:#0F0F0F;--card:#1A1A1A;--card2:#242424;--border:#2E2E2E;
+  --text:#FFFFFF;--muted:#B3B3B3;--subtle:#666666;
+  --indigo:#FFFFFF;--indigo2:#FFFFFF;            /* chrome accent = monochrome */
+  --green:#34d399;--amber:#f59e0b;--red:#CE0E2D;--purple:#B3B3B3;--cyan:#4f8ef7;
   --wayfair:#4f8ef7;--walmart:#fbbf24;--target:#f87171;--macys:#a78bfa;--michaels:#34d399;
+  /* trend-series palette: ink + AF blue/red accents + grey */
+  --s-total:#FFFFFF;--s-ppc:#7FA3E8;--s-org:#9A9A9A;--s-spend:#E25563;
 }
 [data-theme="light"]{
-  --bg:#f8f9fc;--card:#ffffff;--card2:#f1f3f8;--border:#e2e5ef;
-  --text:#1a1d2e;--muted:#6b7280;--subtle:#d1d5db;
-  --indigo:#4f46e5;--indigo2:#6366f1;
-  --green:#059669;--amber:#d97706;--red:#dc2626;--purple:#7c3aed;--cyan:#0891b2;
+  /* AF light theme — the on-brand default: white-first, near-black ink */
+  --bg:#FFFFFF;--card:#FFFFFF;--card2:#F7F7F7;--border:#E6E6E6;
+  --text:#0F0F0F;--muted:#666666;--subtle:#B3B3B3;
+  --indigo:#0F0F0F;--indigo2:#0F0F0F;            /* chrome accent = af-black */
+  --green:#059669;--amber:#b45309;--red:#CE0E2D;--purple:#666666;--cyan:#003595;
   --wayfair:#2563eb;--walmart:#ca8a04;--target:#dc2626;--macys:#7c3aed;--michaels:#059669;
+  --s-total:#0F0F0F;--s-ppc:#003595;--s-org:#8C8C8C;--s-spend:#CE0E2D;
 }
-body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-height:100vh}
+body{font-family:'Glacial Indifference','DM Sans','Inter',sans-serif;background:var(--bg);color:var(--text);min-height:100vh}
 
 /* ── HEADER ── */
-.hdr{background:linear-gradient(180deg,#161930 0%,var(--bg) 100%);border-bottom:1px solid var(--border);padding:16px 28px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:99}
+.hdr{background:var(--bg);border-bottom:1px solid var(--border);padding:16px 28px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:99}
 .hdr-l{display:flex;align-items:center;gap:14px}
-.logo{width:40px;height:40px;border-radius:10px;background:linear-gradient(135deg,var(--indigo),var(--purple));display:flex;align-items:center;justify-content:center;font-weight:800;font-size:15px;flex-shrink:0;box-shadow:0 4px 14px rgba(99,102,241,.35)}
+.wordmark{font-weight:700;font-size:18px;letter-spacing:.05em;white-space:nowrap;flex-shrink:0}
+.hdr-sep{width:1px;height:26px;background:var(--border);flex-shrink:0}
 .hdr-title h1{font-size:16px;font-weight:700;letter-spacing:-.3px}
 .hdr-title p{font-size:11px;color:var(--muted);margin-top:1px}
 .hdr-r{display:flex;gap:8px}
-.btn-print{background:var(--card2);border:1px solid var(--border);color:var(--text);padding:7px 14px;border-radius:8px;font-size:12px;font-weight:500;cursor:pointer;font-family:'Inter',sans-serif;transition:background .15s}
+.btn-print{background:var(--card2);border:1px solid var(--border);color:var(--text);padding:7px 14px;border-radius:8px;font-size:12px;font-weight:400;cursor:pointer;font-family:'Glacial Indifference','DM Sans','Inter',sans-serif;transition:background .15s}
 .btn-print:hover{background:var(--subtle)}
 
 /* ── FILTER BAR ── */
@@ -39,7 +46,7 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-h
 .filter-row{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
 .filter-lbl{font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;width:80px;flex-shrink:0}
 .pills{display:flex;flex-wrap:wrap;gap:6px}
-.pill{padding:5px 13px;border-radius:20px;font-size:11.5px;font-weight:600;cursor:pointer;border:1.5px solid transparent;transition:all .15s;user-select:none;background:rgba(255,255,255,.04);color:var(--muted);border-color:var(--border)}
+.pill{padding:5px 13px;border-radius:20px;font-size:11.5px;font-weight:700;cursor:pointer;border:1.5px solid transparent;transition:all .15s;user-select:none;background:rgba(255,255,255,.04);color:var(--muted);border-color:var(--border)}
 .pill:hover{border-color:var(--subtle);color:var(--text)}
 .pill.active{color:white;border-color:transparent}
 .pill[data-mp=Wayfair].active{background:rgba(79,142,247,.2);border-color:var(--wayfair);color:var(--wayfair)}
@@ -47,7 +54,8 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-h
 .pill[data-mp=Target].active{background:rgba(248,113,113,.2);border-color:var(--target);color:var(--target)}
 .pill[data-mp=Macys].active{background:rgba(167,139,250,.2);border-color:var(--macys);color:var(--macys)}
 .pill[data-mp=Michaels].active{background:rgba(52,211,153,.2);border-color:var(--michaels);color:var(--michaels)}
-.pill[data-mth].active{background:rgba(99,102,241,.18);border-color:var(--indigo);color:var(--indigo2)}
+.pill[data-mth].active{background:rgba(127,127,127,.18);border-color:var(--indigo);color:var(--indigo2)}
+.pill[data-status].active{background:rgba(127,127,127,.1);border-color:var(--pill-c);color:var(--pill-c)}
 .filter-acts{display:flex;gap:6px;margin-left:4px}
 .filter-act{font-size:11px;color:var(--muted);cursor:pointer;padding:2px 6px;border-radius:4px;transition:color .15s}
 .filter-act:hover{color:var(--indigo2)}
@@ -59,12 +67,12 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-h
 [data-theme="light"] .pill[data-mp=Target].active{background:rgba(220,38,38,.08)}
 [data-theme="light"] .pill[data-mp=Macys].active{background:rgba(124,58,237,.08)}
 [data-theme="light"] .pill[data-mp=Michaels].active{background:rgba(5,150,105,.08)}
-[data-theme="light"] .pill[data-mth].active{background:rgba(79,70,229,.08)}
-[data-theme="light"] .hdr{background:linear-gradient(180deg,#f0f2f8 0%,var(--bg) 100%)}
+[data-theme="light"] .pill[data-mth].active{background:rgba(15,15,15,.05)}
+[data-theme="light"] .hdr{background:var(--bg)}
 [data-theme="light"] .kpi:hover{box-shadow:0 6px 24px rgba(0,0,0,.08)}
 [data-theme="light"] td:first-child{color:var(--text)}
-[data-theme="light"] tbody tr:hover{background:rgba(99,102,241,.04)}
-[data-theme="light"] tfoot td{background:rgba(99,102,241,.04)}
+[data-theme="light"] tbody tr:hover{background:rgba(127,127,127,.04)}
+[data-theme="light"] tfoot td{background:rgba(127,127,127,.04)}
 [data-theme="light"] .mp-stat{border-bottom-color:rgba(0,0,0,.06)}
 
 /* ── MAIN ── */
@@ -83,12 +91,12 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-h
 .kpi{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:16px 18px;transition:transform .2s,box-shadow .2s;cursor:default;position:relative;overflow:hidden}
 .kpi:hover{transform:translateY(-2px);box-shadow:0 6px 24px rgba(0,0,0,.3)}
 .kpi-accent{position:absolute;top:0;left:0;right:0;height:2px;border-radius:12px 12px 0 0}
-.kpi-lbl{font-size:10px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.07em;margin-bottom:8px}
-.kpi-val{font-size:22px;font-weight:800;letter-spacing:-.4px;line-height:1}
+.kpi-lbl{font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.07em;margin-bottom:8px}
+.kpi-val{font-size:22px;font-weight:700;letter-spacing:-.4px;line-height:1}
 .kpi-sub{font-size:10px;color:var(--muted);margin-top:5px}
-.kpi-chg{font-size:9.5px;font-weight:600;margin-top:4px;letter-spacing:-.01em}
+.kpi-chg{font-size:9.5px;font-weight:700;margin-top:4px;letter-spacing:-.01em}
 .kpi-chg.chg-up{color:var(--green)}.kpi-chg.chg-down{color:var(--red)}.kpi-chg.chg-flat{color:var(--muted)}
-.woc-badge{font-size:10px;font-weight:600;padding:2px 7px;border-radius:4px;white-space:nowrap}
+.woc-badge{font-size:10px;font-weight:700;padding:2px 7px;border-radius:4px;white-space:nowrap}
 .woc-hi{background:rgba(16,185,129,.15);color:#10b981}
 .woc-md{background:rgba(245,158,11,.15);color:#f59e0b}
 .woc-lo{background:rgba(239,68,68,.15);color:#ef4444}
@@ -122,8 +130,8 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-h
 .mp-card-bar{position:absolute;top:0;left:0;right:0;height:3px;border-radius:13px 13px 0 0}
 .mp-head{display:flex;align-items:center;gap:7px;margin-bottom:14px;padding-top:4px}
 .mp-dot{width:9px;height:9px;border-radius:50%;flex-shrink:0}
-.mp-name{font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.1em}
-.mp-stat{display:flex;justify-content:space-between;align-items:baseline;padding:7px 0;border-bottom:1px solid rgba(36,40,66,.5)}
+.mp-name{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.1em}
+.mp-stat{display:flex;justify-content:space-between;align-items:baseline;padding:7px 0;border-bottom:1px solid rgba(127,127,127,.5)}
 .mp-stat:last-child{border-bottom:none}
 .mp-stat-lbl{font-size:10px;color:var(--muted)}
 .mp-stat-val{font-size:12.5px;font-weight:700}
@@ -136,7 +144,7 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-h
 .tbl-card{background:var(--card);border:1px solid var(--border);border-radius:13px;padding:20px 22px;margin-bottom:14px}
 .tbl-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;gap:12px;flex-wrap:wrap}
 .tbl-hint{font-size:11px;color:var(--muted)}
-.tbl-search{background:var(--bg);border:1px solid var(--border);color:var(--text);padding:7px 12px;border-radius:8px;font-size:12px;width:200px;font-family:'Inter',sans-serif;transition:border-color .15s}
+.tbl-search{background:var(--bg);border:1px solid var(--border);color:var(--text);padding:7px 12px;border-radius:8px;font-size:12px;width:200px;font-family:'Glacial Indifference','DM Sans','Inter',sans-serif;transition:border-color .15s}
 .tbl-search:focus{outline:none;border-color:var(--indigo)}
 .tbl-wrap{overflow-x:auto}
 table{width:100%;border-collapse:collapse;font-size:12px;min-width:860px}
@@ -146,13 +154,13 @@ thead th:hover{color:var(--text)}
 thead th.asc::after{content:' ↑';color:var(--indigo2)}
 thead th.desc::after{content:' ↓';color:var(--indigo2)}
 thead th.sorted{color:var(--indigo2)}
-tbody tr{border-bottom:1px solid rgba(36,40,66,.55);transition:background .12s}
-tbody tr:hover{background:rgba(99,102,241,.05)}
+tbody tr{border-bottom:1px solid rgba(127,127,127,.55);transition:background .12s}
+tbody tr:hover{background:rgba(127,127,127,.05)}
 td{padding:9px 12px;text-align:right;white-space:nowrap}
-td:first-child{text-align:left;font-weight:600;color:#fff}
+td:first-child{text-align:left;font-weight:700;color:#fff}
 .bar-wrap{display:flex;align-items:center;justify-content:flex-end;gap:8px}
 .bar-mini{height:3px;border-radius:2px;min-width:1px}
-tfoot td{padding:9px 12px;text-align:right;font-weight:700;font-size:12px;border-top:2px solid var(--border);background:rgba(99,102,241,.06)}
+tfoot td{padding:9px 12px;text-align:right;font-weight:700;font-size:12px;border-top:2px solid var(--border);background:rgba(127,127,127,.06)}
 tfoot td:first-child{text-align:left}
 
 /* ── SCROLLBAR ── */
@@ -176,14 +184,15 @@ tfoot td:first-child{text-align:left}
 <!-- HEADER -->
 <header class="hdr">
   <div class="hdr-l">
-    <div class="logo">AF</div>
+    <div class="wordmark">americanflat</div>
+    <div class="hdr-sep"></div>
     <div class="hdr-title">
       <h1>Marketplace Analytics Dashboard</h1>
       <p id="periodLabel">Aug 2025 – May 2026 &nbsp;·&nbsp; 5 Marketplaces &nbsp;·&nbsp; 2,194 SKUs</p>
     </div>
   </div>
   <div class="hdr-r">
-    <button class="btn-print" id="btnTheme">☀ Light</button>
+    <button class="btn-print" id="btnTheme">☾ Dark</button>
     <button class="btn-print" id="btnPrint">⬇ Export PDF</button>
   </div>
 </header>
@@ -230,18 +239,18 @@ tfoot td:first-child{text-align:left}
 
   <!-- KPI TILES -->
   <div class="kpi-grid">
-    <div class="kpi"><div class="kpi-accent" style="background:linear-gradient(90deg,#10b981,#34d399)"></div><div class="kpi-lbl">Total Sales</div><div class="kpi-val" style="color:#10b981" id="k-ts">—</div><div class="kpi-sub" id="k-ts-sub"></div></div>
-    <div class="kpi"><div class="kpi-accent" style="background:linear-gradient(90deg,#f59e0b,#fcd34d)"></div><div class="kpi-lbl">PPC Sales</div><div class="kpi-val" style="color:#f59e0b" id="k-ps">—</div><div class="kpi-sub" id="k-ps-sub"></div></div>
-    <div class="kpi"><div class="kpi-accent" style="background:linear-gradient(90deg,#8b5cf6,#c084fc)"></div><div class="kpi-lbl">Organic Sales</div><div class="kpi-val" style="color:#8b5cf6" id="k-os">—</div><div class="kpi-sub" id="k-os-sub"></div></div>
-    <div class="kpi"><div class="kpi-accent" style="background:linear-gradient(90deg,#ef4444,#f87171)"></div><div class="kpi-lbl">PPC Spend</div><div class="kpi-val" style="color:#ef4444" id="k-sp">—</div></div>
-    <div class="kpi"><div class="kpi-accent" style="background:linear-gradient(90deg,#6366f1,#818cf8)"></div><div class="kpi-lbl">ROAS</div><div class="kpi-val" style="color:#818cf8" id="k-roas">—</div></div>
-    <div class="kpi"><div class="kpi-accent" style="background:linear-gradient(90deg,#06b6d4,#67e8f9)"></div><div class="kpi-lbl">TACOS %</div><div class="kpi-val" style="color:#06b6d4" id="k-tacos">—</div></div>
-    <div class="kpi"><div class="kpi-accent" style="background:linear-gradient(90deg,#6366f1,#818cf8)"></div><div class="kpi-lbl">Ordered Units</div><div class="kpi-val" id="k-units">—</div></div>
-    <div class="kpi"><div class="kpi-accent" style="background:linear-gradient(90deg,#f59e0b,#fcd34d)"></div><div class="kpi-lbl">PPC Units</div><div class="kpi-val" id="k-pu">—</div></div>
-    <div class="kpi"><div class="kpi-accent" style="background:linear-gradient(90deg,#8b5cf6,#c084fc)"></div><div class="kpi-lbl">Organic Units</div><div class="kpi-val" id="k-ou">—</div></div>
-    <div class="kpi"><div class="kpi-accent" style="background:linear-gradient(90deg,#06b6d4,#67e8f9)"></div><div class="kpi-lbl">PPC % of Sales</div><div class="kpi-val" id="k-ppct">—</div></div>
-    <div class="kpi"><div class="kpi-accent" style="background:linear-gradient(90deg,#10b981,#34d399)"></div><div class="kpi-lbl">Avg Selling Price</div><div class="kpi-val" id="k-asp">—</div></div>
-    <div class="kpi"><div class="kpi-accent" style="background:linear-gradient(90deg,#ef4444,#f87171)"></div><div class="kpi-lbl">Spend per Unit</div><div class="kpi-val" id="k-spu">—</div></div>
+    <div class="kpi"><div class="kpi-accent" style="background:var(--text)"></div><div class="kpi-lbl">Total Sales</div><div class="kpi-val" id="k-ts">—</div><div class="kpi-sub" id="k-ts-sub"></div></div>
+    <div class="kpi"><div class="kpi-accent" style="background:var(--text)"></div><div class="kpi-lbl">PPC Sales</div><div class="kpi-val" id="k-ps">—</div><div class="kpi-sub" id="k-ps-sub"></div></div>
+    <div class="kpi"><div class="kpi-accent" style="background:var(--text)"></div><div class="kpi-lbl">Organic Sales</div><div class="kpi-val" id="k-os">—</div><div class="kpi-sub" id="k-os-sub"></div></div>
+    <div class="kpi"><div class="kpi-accent" style="background:var(--text)"></div><div class="kpi-lbl">PPC Spend</div><div class="kpi-val" id="k-sp">—</div></div>
+    <div class="kpi"><div class="kpi-accent" style="background:var(--text)"></div><div class="kpi-lbl">ROAS</div><div class="kpi-val" id="k-roas">—</div></div>
+    <div class="kpi"><div class="kpi-accent" style="background:var(--text)"></div><div class="kpi-lbl">TACOS %</div><div class="kpi-val" id="k-tacos">—</div></div>
+    <div class="kpi"><div class="kpi-accent" style="background:var(--text)"></div><div class="kpi-lbl">Ordered Units</div><div class="kpi-val" id="k-units">—</div></div>
+    <div class="kpi"><div class="kpi-accent" style="background:var(--text)"></div><div class="kpi-lbl">PPC Units</div><div class="kpi-val" id="k-pu">—</div></div>
+    <div class="kpi"><div class="kpi-accent" style="background:var(--text)"></div><div class="kpi-lbl">Organic Units</div><div class="kpi-val" id="k-ou">—</div></div>
+    <div class="kpi"><div class="kpi-accent" style="background:var(--text)"></div><div class="kpi-lbl">PPC % of Sales</div><div class="kpi-val" id="k-ppct">—</div></div>
+    <div class="kpi"><div class="kpi-accent" style="background:var(--text)"></div><div class="kpi-lbl">Avg Selling Price</div><div class="kpi-val" id="k-asp">—</div></div>
+    <div class="kpi"><div class="kpi-accent" style="background:var(--text)"></div><div class="kpi-lbl">Spend per Unit</div><div class="kpi-val" id="k-spu">—</div></div>
   </div>
 
   <!-- SALES TREND -->
@@ -252,10 +261,10 @@ tfoot td:first-child{text-align:left}
         <div class="card-sub">Monthly performance across all selected channels</div>
       </div>
       <div class="legend">
-        <div class="leg"><div class="leg-line" style="background:#10b981"></div>Total Sales</div>
-        <div class="leg"><div class="leg-line" style="background:#f59e0b"></div>PPC Sales</div>
-        <div class="leg"><div class="leg-line" style="background:#8b5cf6"></div>Organic Sales</div>
-        <div class="leg"><div class="leg-line" style="background:#6366f1;opacity:.7"></div><span style="opacity:.7">PPC Spend</span></div>
+        <div class="leg"><div class="leg-line" style="background:var(--s-total)"></div>Total Sales</div>
+        <div class="leg"><div class="leg-line" style="background:var(--s-ppc)"></div>PPC Sales</div>
+        <div class="leg"><div class="leg-line" style="background:var(--s-org)"></div>Organic Sales</div>
+        <div class="leg"><div class="leg-line" style="background:var(--s-spend);opacity:.7"></div><span style="opacity:.7">PPC Spend</span></div>
       </div>
       <div class="chart-box h-260"><canvas id="c-sales"></canvas></div>
     </div>
@@ -371,24 +380,32 @@ var skuPPC={"MP-PES-SHOW-A281P273-7174-GREEN":{"sp":69.19,"ps":579.91,"pu":9.0},
 // ════════════════════════════════════════════════
 const THEMES = {
   dark: {
-    gridColor: 'rgba(36,40,66,0.5)',
-    tickColor: '#7a84a0',
-    tooltipBg: 'rgba(17,20,40,0.96)',
-    tooltipBorder: 'rgba(36,40,66,0.8)',
-    tooltipTitleColor: '#e2e8f0',
-    tooltipBodyColor: '#e2e8f0',
-    donutBorder: 'rgba(11,13,23,.9)',
-    legendColor: '#7a84a0'
+    gridColor: 'rgba(127,127,127,0.5)',
+    tickColor: '#B3B3B3',
+    tooltipBg: 'rgba(15,15,15,0.96)',
+    tooltipBorder: 'rgba(127,127,127,0.8)',
+    tooltipTitleColor: '#FFFFFF',
+    tooltipBodyColor: '#FFFFFF',
+    donutBorder: 'rgba(15,15,15,.9)',
+    legendColor: '#B3B3B3',
+    sTotal: '#FFFFFF',
+    sPpc: '#7FA3E8',
+    sOrg: '#9A9A9A',
+    sSpend: '#E25563'
   },
   light: {
     gridColor: 'rgba(0,0,0,0.07)',
-    tickColor: '#6b7280',
+    tickColor: '#666666',
     tooltipBg: 'rgba(255,255,255,0.96)',
     tooltipBorder: 'rgba(0,0,0,0.1)',
-    tooltipTitleColor: '#1a1d2e',
-    tooltipBodyColor: '#374151',
+    tooltipTitleColor: '#0F0F0F',
+    tooltipBodyColor: '#0F0F0F',
     donutBorder: 'rgba(255,255,255,.9)',
-    legendColor: '#6b7280'
+    legendColor: '#666666',
+    sTotal: '#0F0F0F',
+    sPpc: '#003595',
+    sOrg: '#8C8C8C',
+    sSpend: '#CE0E2D'
   }
 };
 
@@ -490,9 +507,9 @@ function computeMpAgg(){
 // ════════════════════════════════════════════════
 // CHARTS INIT
 // ════════════════════════════════════════════════
-Chart.defaults.color = '#7a84a0';
-Chart.defaults.borderColor = 'rgba(36,40,66,0.7)';
-Chart.defaults.font.family = "'Inter',sans-serif";
+Chart.defaults.color = '#B3B3B3';
+Chart.defaults.borderColor = 'rgba(127,127,127,0.7)';
+Chart.defaults.font.family = "'Glacial Indifference','DM Sans','Inter',sans-serif";
 Chart.defaults.font.size = 11;
 
 let cSales, cRoas, cTacos, cUnits, cMix;
@@ -505,10 +522,10 @@ function initCharts(){
   cSales = new Chart(document.getElementById('c-sales').getContext('2d'),{
     type:'line',
     data:{labels:[],datasets:[
-      {label:'Total Sales',  data:[],borderColor:'#10b981',borderWidth:2.5,tension:.4,pointRadius:3,pointHoverRadius:6,backgroundColor:'transparent'},
-      {label:'PPC Sales',    data:[],borderColor:'#f59e0b',borderWidth:2,tension:.4,pointRadius:3,pointHoverRadius:6,backgroundColor:'transparent'},
-      {label:'Organic Sales',data:[],borderColor:'#8b5cf6',borderWidth:2,tension:.4,pointRadius:3,pointHoverRadius:6,backgroundColor:'transparent'},
-      {label:'PPC Spend',    data:[],borderColor:'#6366f1',borderWidth:1.5,borderDash:[4,3],tension:.4,pointRadius:2,pointHoverRadius:5,backgroundColor:'transparent'},
+      {label:'Total Sales',  data:[],borderColor:t.sTotal,borderWidth:2.5,tension:.4,pointRadius:3,pointHoverRadius:6,backgroundColor:'transparent'},
+      {label:'PPC Sales',    data:[],borderColor:t.sPpc,borderWidth:2,tension:.4,pointRadius:3,pointHoverRadius:6,backgroundColor:'transparent'},
+      {label:'Organic Sales',data:[],borderColor:t.sOrg,borderWidth:2,tension:.4,pointRadius:3,pointHoverRadius:6,backgroundColor:'transparent'},
+      {label:'PPC Spend',    data:[],borderColor:t.sSpend,borderWidth:1.5,borderDash:[4,3],tension:.4,pointRadius:2,pointHoverRadius:5,backgroundColor:'transparent'},
     ]},
     options:{responsive:true,maintainAspectRatio:false,interaction:{mode:'index',intersect:false},
       plugins:{legend:{display:false},tooltip:{...tooltip,callbacks:{label:c=>' '+c.dataset.label+': '+f$(c.raw)}}},
@@ -518,9 +535,9 @@ function initCharts(){
   cRoas = new Chart(document.getElementById('c-roas').getContext('2d'),{
     type:'line',
     data:{labels:[],datasets:[{
-      label:'ROAS',data:[],borderColor:'#6366f1',borderWidth:2.5,tension:.4,
-      pointRadius:4,pointHoverRadius:7,pointBackgroundColor:'#6366f1',
-      fill:true,backgroundColor:'rgba(99,102,241,0.15)'
+      label:'ROAS',data:[],borderColor:t.sTotal,borderWidth:2.5,tension:.4,
+      pointRadius:4,pointHoverRadius:7,pointBackgroundColor:t.sTotal,
+      fill:true,backgroundColor:'rgba(127,127,127,0.15)'
     }]},
     options:{responsive:true,maintainAspectRatio:false,
       plugins:{legend:{display:false},tooltip:{...tooltip,callbacks:{label:c=>' ROAS: '+c.raw.toFixed(2)+'x'}}},
@@ -530,9 +547,9 @@ function initCharts(){
   cTacos = new Chart(document.getElementById('c-tacos').getContext('2d'),{
     type:'line',
     data:{labels:[],datasets:[{
-      label:'TACOS',data:[],borderColor:'#10b981',borderWidth:2.5,tension:.4,
-      pointRadius:4,pointHoverRadius:7,pointBackgroundColor:'#10b981',
-      fill:true,backgroundColor:'rgba(16,185,129,0.15)'
+      label:'TACOS',data:[],borderColor:t.sPpc,borderWidth:2.5,tension:.4,
+      pointRadius:4,pointHoverRadius:7,pointBackgroundColor:t.sPpc,
+      fill:true,backgroundColor:'rgba(127,127,127,0.12)'
     }]},
     options:{responsive:true,maintainAspectRatio:false,
       plugins:{legend:{display:false},tooltip:{...tooltip,callbacks:{label:c=>' TACOS: '+c.raw.toFixed(2)+'%'}}},
@@ -565,6 +582,21 @@ function applyChartTheme(){
   var t = THEMES[getTheme()];
   var scales = getScales();
   var tooltip = getTooltip();
+
+  if(cSales){
+    cSales.data.datasets[0].borderColor = t.sTotal;
+    cSales.data.datasets[1].borderColor = t.sPpc;
+    cSales.data.datasets[2].borderColor = t.sOrg;
+    cSales.data.datasets[3].borderColor = t.sSpend;
+  }
+  if(cRoas){
+    cRoas.data.datasets[0].borderColor = t.sTotal;
+    cRoas.data.datasets[0].pointBackgroundColor = t.sTotal;
+  }
+  if(cTacos){
+    cTacos.data.datasets[0].borderColor = t.sPpc;
+    cTacos.data.datasets[0].pointBackgroundColor = t.sPpc;
+  }
 
   [cSales, cRoas, cTacos, cUnits].forEach(function(chart){
     if(!chart) return;
@@ -652,8 +684,8 @@ function render(){
 
   // period label
   document.getElementById('periodLabel').textContent =
-    (selMth.size===9?'Aug 2025 – Apr 2026':`${selMth.size} months selected`) +
-    ` · ${selMp.size} Marketplace${selMp.size!==1?'s':''} · 2,065 SKUs`;
+    (selMth.size===MONTHS.length?'Aug 2025 – May 2026':`${selMth.size} months selected`) +
+    ` · ${selMp.size} Marketplace${selMp.size!==1?'s':''} · 2,194 SKUs`;
 
   // — Sales Chart —
   cSales.data.labels = labels;
@@ -779,17 +811,17 @@ function renderTable(){
   document.getElementById('tblBody').innerHTML = rows.map(function(d){
     var bw = Math.max(2, Math.round(d.s/maxS*72));
     var rc = rClass(d.roas);
-    var stc = sc[d.status]||'#7a84a0';
+    var stc = sc[d.status]||'#B3B3B3';
     var wocCls = d.woc > 44 ? 'woc-lo' : d.woc >= 32 ? 'woc-hi' : 'woc-md';
     var wocTxt = d.woc >= 99 ? '99+' : d.woc.toFixed(1);
     var stockTxt = d.stock > 0 ? fN(d.stock) : '0';
     return '<tr>' +
       '<td>' + d.sku + '</td>' +
-      '<td><span style="color:' + stc + ';font-size:9px;font-weight:600;padding:2px 6px;border:1px solid ' + stc + '40;border-radius:4px">' + d.status + '</span></td>' +
+      '<td><span style="color:' + stc + ';font-size:9px;font-weight:700;padding:2px 6px;border:1px solid ' + stc + '40;border-radius:4px">' + d.status + '</span></td>' +
       '<td>' + stockTxt + '</td>' +
       '<td><span class="woc-badge ' + wocCls + '">' + wocTxt + 'w</span></td>' +
       '<td>' + fN(d.u) + '</td>' +
-      '<td><div class="bar-wrap"><div class="bar-mini" style="width:' + bw + 'px;background:#10b981"></div>' + f$(d.s) + '</div></td>' +
+      '<td><div class="bar-wrap"><div class="bar-mini" style="width:' + bw + 'px;background:var(--s-total);opacity:.55"></div>' + f$(d.s) + '</div></td>' +
       '<td>' + f$(d.ps) + '</td>' +
       '<td>' + f$(d.sp) + '</td>' +
       '<td><span class="roas-badge ' + rc + '">' + d.roas.toFixed(2) + 'x</span></td>' +
@@ -857,10 +889,13 @@ document.addEventListener('DOMContentLoaded', function(){
     try { localStorage.setItem('dashboard-theme', next); } catch(e){}
   });
 
-  // Restore saved theme
+  // Restore saved theme (default = light / on-brand AF white)
   try {
     var saved = localStorage.getItem('dashboard-theme');
-    if(saved === 'light'){
+    if(saved === 'dark'){
+      document.documentElement.dataset.theme = 'dark';
+      document.getElementById('btnTheme').textContent = '☀ Light';
+    } else {
       document.documentElement.dataset.theme = 'light';
       document.getElementById('btnTheme').textContent = '☾ Dark';
     }
